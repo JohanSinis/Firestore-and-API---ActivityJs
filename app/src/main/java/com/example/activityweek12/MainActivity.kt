@@ -34,8 +34,8 @@ fun NameGradeForm() {
     val context = LocalContext.current
     val db = FirebaseFirestore.getInstance()
 
-    var name by remember { mutableStateOf(TextFieldValue("")) }
-    var grade by remember { mutableStateOf(TextFieldValue("")) }
+    var nombre by remember { mutableStateOf(TextFieldValue("")) }
+    var email by remember { mutableStateOf(TextFieldValue("")) }
     var isLoading by remember { mutableStateOf(false) }
 
     Column(
@@ -45,23 +45,23 @@ fun NameGradeForm() {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Registro de Estudiantes", style = MaterialTheme.typography.titleLarge)
+        Text("Registro de Usuarios", style = MaterialTheme.typography.titleLarge)
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Campo Name
+        // Campo Nombre
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("Name") },
+            value = nombre,
+            onValueChange = { nombre = it },
+            label = { Text("Nombre") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Campo Grade
+        // Campo Email
         OutlinedTextField(
-            value = grade,
-            onValueChange = { grade = it },
-            label = { Text("Grade") },
+            value = email,
+            onValueChange = { email = it },
+            label = { Text("Email") },
             modifier = Modifier.fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(24.dp))
@@ -69,24 +69,24 @@ fun NameGradeForm() {
         // Botón Submit
         Button(
             onClick = {
-                if (name.text.isBlank() || grade.text.isBlank()) {
+                if (nombre.text.isBlank() || email.text.isBlank()) {
                     Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
                     return@Button
                 }
 
                 isLoading = true
 
-                val student = hashMapOf(
-                    "name" to name.text,
-                    "grade" to grade.text
+                val record = hashMapOf(
+                    "nombre" to nombre.text.trim(),
+                    "email" to email.text.trim().lowercase()
                 )
 
-                db.collection("students")
-                    .add(student)
+                db.collection("records")
+                    .add(record)
                     .addOnSuccessListener {
-                        Toast.makeText(context, "Datos enviados a Firebase", Toast.LENGTH_SHORT).show()
-                        name = TextFieldValue("")
-                        grade = TextFieldValue("")
+                        Toast.makeText(context, "Datos guardados en Firebase", Toast.LENGTH_SHORT).show()
+                        nombre = TextFieldValue("")
+                        email = TextFieldValue("")
                         isLoading = false
                     }
                     .addOnFailureListener { e ->
@@ -103,7 +103,7 @@ fun NameGradeForm() {
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text("Submit")
+                Text("Guardar")
             }
         }
     }
