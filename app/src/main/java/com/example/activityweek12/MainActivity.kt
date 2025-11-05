@@ -13,8 +13,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.google.firebase.firestore.FirebaseFirestore
+import com.example.activityweek12.data.Record
+import com.example.activityweek12.network.RetrofitClient
 import com.example.activityweek12.ui.theme.ActivityWeek12Theme
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +36,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun NameGradeForm() {
     val context = LocalContext.current
-    val db = FirebaseFirestore.getInstance()
+    val scope = rememberCoroutineScope()
 
     var nombre by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
@@ -46,6 +50,12 @@ fun NameGradeForm() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Registro de Usuarios", style = MaterialTheme.typography.titleLarge)
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            "Conectado a API Local",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.primary
+        )
         Spacer(modifier = Modifier.height(24.dp))
 
         // Campo Nombre
@@ -53,7 +63,8 @@ fun NameGradeForm() {
             value = nombre,
             onValueChange = { nombre = it },
             label = { Text("Nombre") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -62,7 +73,8 @@ fun NameGradeForm() {
             value = email,
             onValueChange = { email = it },
             label = { Text("Email") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !isLoading
         )
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -70,29 +82,58 @@ fun NameGradeForm() {
         Button(
             onClick = {
                 if (nombre.text.isBlank() || email.text.isBlank()) {
-                    Toast.makeText(context, "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        "Por favor, complete todos los campos",
+                        Toast.LENGTH_SHORT
+                    ).show()
                     return@Button
                 }
 
                 isLoading = true
 
-                val record = hashMapOf(
-                    "nombre" to nombre.text.trim(),
-                    "email" to email.text.trim().lowercase()
-                )
+                scope.launch {
+                    try {
+                        val record = Record(
+                            nombre = nombre.text.trim(),
+                            email = email.text.trim().lowercase()
+                        )
 
-                db.collection("records")
-                    .add(record)
-                    .addOnSuccessListener {
-                        Toast.makeText(context, "Datos guardados en Firebase", Toast.LENGTH_SHORT).show()
-                        nombre = TextFieldValue("")
-                        email = TextFieldValue("")
+                        val response = withContext(Dispatchers.IO) {
+                            RetrofitClient.apiService.addRecord(record)
+                        }
+
+                        if (response.isSuccessful) {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    "✅ Datos guardados correctamente",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                nombre = TextFieldValue("")
+                                email = TextFieldValue("")
+                            }
+                        } else {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    "❌ Error: ${response.code()} - ${response.message()}",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "❌ Error de conexión: ${e.message}",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    } finally {
                         isLoading = false
                     }
-                    .addOnFailureListener { e ->
-                        Toast.makeText(context, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                        isLoading = false
-                    }
+                }
             },
             modifier = Modifier.fillMaxWidth(),
             enabled = !isLoading
@@ -103,7 +144,7 @@ fun NameGradeForm() {
                     color = MaterialTheme.colorScheme.onPrimary
                 )
             } else {
-                Text("Guardar")
+                Text("Guardar en API Local")
             }
         }
     }
