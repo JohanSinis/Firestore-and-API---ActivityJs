@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "b740a637-1926-4748-a73d-14dc69dfbb06",
+		"name": "Actividad 12 - Firestore API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "407388",
+		"_collection_link": "https://dark-flare-106206.postman.co/workspace/prueba-API~58eb1bc2-5a79-4409-9b07-d9ff8b87f25a/collection/39038176-b740a637-1926-4748-a73d-14dc69dfbb06?action=share&source=collection_link&creator=39038176"
+	},
+	"item": [
+		{
+			"name": "Crear Registro",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{ \"nombre\": \"Johan Sinisterra\", \"email\": \"johan.sinisterra@example.com\"}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/api/records?nombre=Johan&email=johan@example.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"records"
+					],
+					"query": [
+						{
+							"key": "nombre",
+							"value": "Johan"
+						},
+						{
+							"key": "email",
+							"value": "johan@example.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Obtener Registros",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/api/records",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"api",
+						"records"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

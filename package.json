@@ -1,0 +1,20 @@
+{
+  "name": "firestore-activity-api",
+  "version": "1.0.0",
+  "description": "API REST con Node.js y Express para gestionar registros de usuarios con nombre y email",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "node src/index.js",
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2"
+  },
+  "author": "Johan Stiven Sinisterra - 407388",
+  "license": "ISC"
+}
+
+
+

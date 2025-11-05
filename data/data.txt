@@ -1,0 +1,14 @@
+[
+  {
+    "nombre": "Johan Stiven Sinisterra",
+    "email": "johan.sinisterra@unicatolica.edu.co"
+  },
+  {
+    "nombre": "María García",
+    "email": "maria.garcia@example.com"
+  },
+  {
+    "nombre": "Carlos Rodríguez",
+    "email": "carlos.rodriguez@example.com"
+  }
+]
